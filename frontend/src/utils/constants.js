@@ -1,5 +1,5 @@
 export const APP_CONFIG = {
-    name: "Gestão de Energia Residencial",
+    name: "VOLTIX",
     version: "1.0.0",
     description: 'Gestão Inteligente de Energia',
     welcomeMessage: 'Bem-vindo de volta!',

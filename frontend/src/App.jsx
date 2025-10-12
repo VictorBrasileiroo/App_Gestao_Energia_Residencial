@@ -7,7 +7,8 @@ function App() {
     return (
         // return o que será renderizado na tela
         <div className="App">
-            <Login />
+            <Dashboard />
+            {/* <Login /> */}
         </div>
     )
 }
