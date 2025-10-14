@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const DashboardLayout = ({ children }) => {
     return (
@@ -12,7 +13,7 @@ const DashboardLayout = ({ children }) => {
                 
                 <nav className='mt-6'>
                     {[
-                        { name: 'Dashboard'. icon: '', active: true},
+                        { name: 'Dashboard', icon: '', active: true},
                         { name: 'Relatórios'}
                     ]}
                 </nav>
@@ -21,3 +22,5 @@ const DashboardLayout = ({ children }) => {
         </div>
     )
 }
+
+export default DashboardLayout

@@ -1,16 +1,22 @@
 import React from 'react'
 import DashboardLayout from '../components/DashboardLayout'
-import StatesCard from '../components/StatesCard'
-import ConsumptionCard from '../components/ConsumptionCard'
-import ComparissonSection from '../components/ComparissonSection'
-import DailyConsumption from '../components/DailyConsumption'
-import PredictionCard from '../components/PredictionCard'
-import TipsCard from '../components/TipsCard'
 
 const Dashboard = () => {
-    return (
-        <DashboardLayout>
-            <h1>ALOOOOOOOOO</h1>
-        </DashboardLayout>
-    )
+  return (
+    <DashboardLayout>
+      <div className="p-6">
+        <h1 className="text-2xl font-bold text-green-600">
+          ✅ Dashboard Funcionando!
+        </h1>
+        <p className="text-gray-600 mt-2">
+          Rotas estão funcionando! Você pode voltar ao Login ou Cadastro.
+        </p>
+        <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+          <p>Componentes do dashboard serão adicionados amanhã.</p>
+        </div>
+      </div>
+    </DashboardLayout>
+  )
 }
+
+export default Dashboard

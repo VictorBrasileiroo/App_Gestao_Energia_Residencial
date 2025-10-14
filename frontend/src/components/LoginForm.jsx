@@ -2,17 +2,22 @@
 import React, {useState} from 'react'
 //constantes de config
 import {APP_CONFIG} from '../utils/constants'
+import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 //componente funcional LoginForm
 const LoginForm = () => {
-    //estados para email e password
+    const navigate = useNavigate()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-
-    //função para lidar com o submit do formulário
+    
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log('Login attempt:', {email, password})
+        //validação
+        console.log('Login attempt:', { email, password })
+        
+        //vai pra dashboard
+        navigate('/dashboard')
     }
 
     //Interface do form  
@@ -54,7 +59,7 @@ const LoginForm = () => {
                 <div>
                     <label className='flex items-center text-sm font-medium text-gray-700 mb3'>
                         <div className='w-4 h-4 border-2 border-gray-300 rounded mr-3 flex items-center justify-center'>
-                            <div className='w-2 h-2 bg-green-500 *:rounded-sm'></div> 
+                            <div className='w-2 h-2 bg-green-500 rounded-sm'></div> 
                         </div>
                         Email
                     </label>
@@ -104,9 +109,9 @@ const LoginForm = () => {
                 <div className='text-center mt-6'>
                         <p className='text-sm text-gray-600'>
                             {APP_CONFIG.noAcesseMessage}{' '}
-                            <a href='#' className='text-green-600 font-semibold hover:text-green-600 transition-colors'>
-                                {APP_CONFIG.signUpMessage}
-                            </a>
+                            <Link to='/cadastro' className='text-green-500 font-semibold hover:text-green-600 transition-colors'>
+                            Cadastre-se
+                            </Link>
                         </p>
                 </div>
             </div>
