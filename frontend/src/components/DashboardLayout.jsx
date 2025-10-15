@@ -5,12 +5,10 @@ const DashboardLayout = ({ children }) => {
   const location = useLocation()
 
   const menuItems = [
-    { name: 'Dashboard', path: '/dashboard' },
-    { name: 'Relatórios', path: '/relatorios' },
-    { name: 'Alertas', path: '/alertas', badge: 3 },
-    { name: 'Importar Dados', path: '/importar' },
-    { name: 'Configurações', path: '/configuracoes' },
-    { name: 'Sair', path: '/login' }
+    { name: 'Dashboard', path: '/dashboard', icon: '/images/dashboard.png' },
+    { name: 'Relatórios', path: '/relatorios', icon: '/images/relatorio.png' },
+    { name: 'Alertas', path: '/alertas', badge: 3, icon: '/images/alerta.png' },
+    { name: 'Importar Dados', path: '/importar', icon: '/images/importar.png' },
   ]
 
   return (
@@ -41,8 +39,8 @@ const DashboardLayout = ({ children }) => {
                   isActive ? 'bg-green-50 text-green-600 border-r-2 border-green-600' : ''
                 }`}
               >
+                <img src={item.icon} alt={item.name} className="h-5 w-5 mr-3"></img>
                 {/*Adiciona ícone*/}
-                <span className="mr-3 text-lg">{item.icon}</span>
                 <span className="flex-1">{item.name}</span>
                 {item.badge && (
                   <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full">
