@@ -5,7 +5,7 @@ import Login from  './pages/Login'
 import Cadastro from "./pages/Cadastro";
 import Dashboard from "./pages/Dashboard";
 import Relatorios from "./pages/Relatorios";
-
+import Alertas from "./pages/Alertas";
 
 //componnete principal da aplicação
 function App() {
@@ -19,6 +19,7 @@ function App() {
                     <Route path='/cadastro' element={<Cadastro />}></Route>
                     <Route path='/dashboard' element={<Dashboard />}></Route>
                     <Route path='/relatorios' element={<Relatorios />}></Route>
+                    <Route path='/alertas' element={<Alertas />}></Route>
                 </Routes>
             </div>
         </Router>
