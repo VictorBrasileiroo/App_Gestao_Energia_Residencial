@@ -6,6 +6,8 @@ import Cadastro from "./pages/Cadastro";
 import Dashboard from "./pages/Dashboard";
 import Relatorios from "./pages/Relatorios";
 import Alertas from "./pages/Alertas";
+import ImportarDados from "./pages/ImportarDados";
+
 
 //componnete principal da aplicação
 function App() {
@@ -20,6 +22,7 @@ function App() {
                     <Route path='/dashboard' element={<Dashboard />}></Route>
                     <Route path='/relatorios' element={<Relatorios />}></Route>
                     <Route path='/alertas' element={<Alertas />}></Route>
+                    <Route path='/importar' element={<ImportarDados> </ImportarDados>}></Route>
                 </Routes>
             </div>
         </Router>

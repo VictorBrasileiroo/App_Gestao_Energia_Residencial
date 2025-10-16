@@ -12,7 +12,7 @@ const DashboardLayout = ({ children }) => {
   ]
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-green-00">
       {/* sidebar */}
       <div className="w-64 bg-white shadow-lg">
         <div className="p-6">
@@ -56,7 +56,7 @@ const DashboardLayout = ({ children }) => {
       {/*main*/}
       <div className="flex-1 overflow-auto">
         {/*cabeca global com perfil*/}
-        <div className="flex justify-end items-center p-4 border-b bg-white">
+        <div className="flex justify-end items-center p-4 border-b">
           <div className="h-10 w-10 bg-gray-300 rounded-full flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-green-500 transition">
             <img
               src="/images/user.png"
