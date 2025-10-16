@@ -8,7 +8,7 @@ import WeeklyAnalysis from '../components/WeeklyAnalysis'
 const Relatorios = () => {
     return (
         <DashboardLayout>
-            <div className='p-6 space-y-6'>
+            <div className='p-6 space-y-6  bg-green-00'>
                 {/*corpo*/}
                 <div className='flex justify-between items-center'>
                     <div>

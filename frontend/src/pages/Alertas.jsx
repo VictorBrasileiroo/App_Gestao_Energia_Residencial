@@ -24,7 +24,7 @@ const Alertas = () => {
       descricao: 'Meta mensal de economia foi alcançada!',
       acao: '',
       lido: false,
-      icone: '/images/success.png',
+      icone: '/images/sucesso.png',
       cor: 'green'
     },
 
@@ -115,7 +115,7 @@ const Alertas = () => {
 
   return (
     <DashboardLayout>
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6 bg-green-00">
         {/*head de estaticias*/}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <div className="flex justify-between items-start mb-6">
