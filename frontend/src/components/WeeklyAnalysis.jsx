@@ -1,46 +1,113 @@
 import React from 'react'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+} from 'chart.js'
+import { Line } from 'react-chartjs-2'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+)
 
 const WeeklyAnalysis = () => {
-  const days = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom']
-  const values = [8, 12, 10, 14, 16, 18, 12] // Valores aproximados do design
+  const chartData = {
+    labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+    datasets: [
+      {
+        label: 'Consumo (kWh)',
+        data: [10, 12, 9, 13, 12, 11, 15],
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        borderWidth: 3,
+        pointBackgroundColor: '#10b981',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 6,
+        pointHoverRadius: 8,
+        tension: 0.4,
+        fill: true
+      }
+    ]
+  }
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        borderColor: 'rgba(255, 255, 255, 0.1)',
+        borderWidth: 1,
+        callbacks: {
+          label: function(context) {
+            return `${context.parsed.y} kWh`
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: true,
+          color: 'rgba(0, 0, 0, 0.1)'
+        },
+        ticks: {
+          font: {
+            size: 12,
+            weight: 'bold'
+          }
+        }
+      },
+      y: {
+        grid: {
+          display: true,
+          color: 'rgba(0, 0, 0, 0.1)'
+        },
+        ticks: {
+          font: {
+            size: 11
+          },
+          callback: function(value) {
+            return value + ' kWh'
+          }
+        },
+        beginAtZero: true,
+        max: 16
+      }
+    },
+    interaction: {
+      mode: 'nearest',
+      axis: 'x',
+      intersect: false
+    }
+  }
 
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Análise Semanal</h3>
+    <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+      <h3 className="text-xl font-bold text-gray-900 mb-6">Análise Semanal</h3>
       
-      {/*grfico*/}
-      <div className="h-48 relative">
-        {/*linhas de grade*/}
-        <div className="absolute inset-0 flex flex-col justify-between">
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="border-t border-gray-200"></div>
-          ))}
-        </div>
-
-        {/*barras*/}
-        <div className="absolute inset-0 flex items-end justify-between px-4 pb-6">
-          {values.map((value, index) => (
-            <div key={index} className="flex flex-col items-center">
-              {/*barra*/}
-              <div 
-                className="w-6 bg-gradient-to-t from-green-500 to-green-600 rounded-t-lg"
-                style={{ height: `${(value / 16) * 100}%` }}
-              ></div>
-              
-              {/*dia*/}
-              <div className="text-xs text-gray-500 mt-2">{days[index]}</div>
-            </div>
-          ))}
-        </div>
-
-        {/*Y*/}
-        <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-xs text-gray-500 py-6">
-          <span>16</span>
-          <span>12</span>
-          <span>8</span>
-          <span>4</span>
-          <span>0</span>
-        </div>
+      {/* Chart.js Line Chart */}
+      <div className="h-64">
+        <Line data={chartData} options={chartOptions} />
       </div>
     </div>
   )

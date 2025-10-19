@@ -8,18 +8,32 @@ import WeeklyAnalysis from '../components/WeeklyAnalysis'
 const Relatorios = () => {
     return (
         <DashboardLayout>
-            <div className='p-6 space-y-6'>
-                {/*corpo*/}
-                <div className='flex justify-between items-center'>
-                    <div>
-                        <h1 className='text-2xl font-bold text-gray-900'>Relatórios</h1>
-                        <p className='text-gray-600'>Análise detalhada do consumo de energia</p>
+            <div className='p-8 space-y-10 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen'>
+                {/*header*/}
+                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div className="flex flex-col space-y-2">
+                        <div className="flex items-center gap-4">
+                            <h1 className="text-4xl font-black text-gray-900">Relatórios</h1>
+                            <span className="text-sm bg-blue-100 text-blue-800 font-medium px-3 py-1 rounded-full">Análise Completa</span>
+                        </div>
+                        <p className="text-lg text-gray-600 font-medium">Análise detalhada do consumo de energia com insights avançados</p>
+                        
+                        <div className="flex items-center gap-3 mt-3">
+                            <div className="text-sm text-gray-500">
+                                <span className="font-semibold text-gray-800">Período:</span> Últimos 30 dias
+                            </div>
+                            <div className="h-6 w-px bg-gray-200" />
+                            <div className="text-sm text-gray-500">
+                                <span className="font-semibold text-gray-800">Atualizado:</span> Agora
+                            </div>
+                        </div>
                     </div>
-                    <div className='flex gap-2'>
-                        <button className='bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors'>
+                    
+                    <div className="flex items-center gap-3">
+                        <button className='flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-2xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold'>
                             Este Mês
                         </button>
-                        <button className='bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors'>
+                        <button className='flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-2xl hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 font-semibold'>
                             Exportar PDF
                         </button>
                     </div>
@@ -29,31 +43,33 @@ const Relatorios = () => {
                 <StatsCardsRelatorios />
 
                 {/*tabs e gráficos*/}
-                <div className='flex gap-4 border-b border-gray-200'>
-                    {['Comparativo', 'Detalhado', 'Tendências'].map((tab) => (
-                        <button
-                        key={tab}
-                        className={`pb-3 px-1 font-medium ${
-                            tab === 'Comparativo'
-                            ? 'text-green-600 border-b-2 border-green-600'
-                            : 'text-gray-500 hover:text-gray-700' 
-                        }`}>
-                        {tab}
-                        </button>
-                    ))}
-                </div>
-
-                {/*chards grid*/}
-                <div className='grid grid-cols-1 lg:grid-cols-2 gap-6'>
-                    {/*col esquerda*/}
-                    <div className='space-y-6'>
-                        <ConsumptionChart />
-                        <WeeklyAnalysis />
+                <div className='bg-white rounded-2xl p-6 shadow-lg'>
+                    <div className='flex gap-6 border-b border-gray-200 mb-6'>
+                        {['Comparativo', 'Detalhado', 'Tendências'].map((tab) => (
+                            <button
+                            key={tab}
+                            className={`pb-4 px-4 font-semibold transition-all duration-200 ${
+                                tab === 'Comparativo'
+                                ? 'text-green-600 border-b-3 border-green-600 bg-green-50 rounded-t-lg'
+                                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50 rounded-t-lg' 
+                            }`}>
+                            {tab}
+                            </button>
+                        ))}
                     </div>
 
-                    {/*col direita*/}
-                    <div className='space-y-6'>
-                        <MonthlySaving />
+                    {/*charts grid*/}
+                    <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
+                        {/*col esquerda*/}
+                        <div className='space-y-8'>
+                            <WeeklyAnalysis />
+                            <ConsumptionChart />
+                        </div>
+
+                        {/*col direita*/}
+                        <div className='space-y-8'>
+                            <MonthlySaving />
+                        </div>
                     </div>
                 </div>
             </div>
