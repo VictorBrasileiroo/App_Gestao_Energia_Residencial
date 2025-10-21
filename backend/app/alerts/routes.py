@@ -15,8 +15,19 @@ def get_db():
 
 @router.get("/")
 def list_alerts(current_user=Depends(get_current_user), db: Session = Depends(get_db)):
-    rows = db.query("alerts").filter_by(user_id=current_user.id).all()
-    return {"message": "Implemente listagem real", "user_id": current_user.id}
+    from ..models import Alert
+    rows = db.query(Alert).filter_by(user_id=current_user.id).all()
+    alerts_list = [
+        {
+            "id": a.id,
+            "trigger_date": str(a.trigger_date),
+            "value_kwh": a.value_kwh,
+            "status": a.status,
+            "alert_rule_id": a.alert_rule_id
+        }
+        for a in rows
+    ]
+    return {"alerts": alerts_list}
 
 @router.post("/evaluate")
 def evaluate_now(current_user=Depends(get_current_user), db: Session = Depends(get_db)):

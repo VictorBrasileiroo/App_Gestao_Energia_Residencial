@@ -1,12 +1,14 @@
 import React, { useState, useRef } from 'react'
 import DashboardLayout from '../components/DashboardLayout'
 import { Upload, Download } from 'lucide-react'
+import { consumptionAPI, predictionsAPI } from '../services/api'
 
 const ImportarDados = () => {
   const [arquivo, setArquivo] = useState(null)
   const [estaArrastando, setEstaArrastando] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [estaEnviando, setEstaEnviando] = useState(false)
+  const [error, setError] = useState(null)
   const fileInputRef = useRef(null)
 
   //f. pra lidar com arrastare soltar
@@ -55,28 +57,46 @@ const ImportarDados = () => {
     setArquivo(file)
   }
 
-  //simula upload (backend)
+  //upload real para o backend
   const handleUpload = async () => {
     if (!arquivo) return
 
     setEstaEnviando(true)
     setUploadProgress(0)
+    setError(null)
 
-    //simulaçao de progresso de upload
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          setTimeout(() => {
-            setEstaEnviando(false)
-            alert('Arquivo importado com sucesso!')
-            setArquivo(null)
-          }, 500)
-          return 100
-        }
-        return prev + 10
-      })
-    }, 200)
+    try {
+      // Progress simulation
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => Math.min(prev + 20, 90))
+      }, 200)
+
+      const response = await consumptionAPI.uploadFile(arquivo)
+      
+      clearInterval(progressInterval)
+      setUploadProgress(100)
+      
+      // Gerar predição automaticamente após upload
+      try {
+        await predictionsAPI.generate()
+      } catch (predErr) {
+        console.error('Error generating prediction:', predErr)
+      }
+      
+      setTimeout(() => {
+        setEstaEnviando(false)
+        alert(`Arquivo importado com sucesso! ${response.data.records_created.hourly} registros por hora e ${response.data.records_created.daily} registros diários criados. Predição gerada automaticamente!`)
+        setArquivo(null)
+        setUploadProgress(0)
+        // Redirect to dashboard
+        window.location.href = '/dashboard'
+      }, 500)
+    } catch (err) {
+      console.error('Error uploading file:', err)
+      setEstaEnviando(false)
+      setError(err.response?.data?.detail || 'Erro ao enviar arquivo. Verifique o formato e tente novamente.')
+      setUploadProgress(0)
+    }
   }
 
   //abrir seletor de arq
@@ -105,15 +125,43 @@ const ImportarDados = () => {
             </div>
             <div className="flex items-center space-x-3">
               <span className="bg-orange-100 text-orange-800 text-sm font-medium text-center px-3 py-1 rounded-full">
-                Aguardando Arquivo
+                {arquivo ? 'Arquivo Selecionado' : 'Aguardando Arquivo'}
               </span>
-              <button className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 flex items-center space-x-2 shadow-md">
+              <button 
+                onClick={() => {
+                  const csvContent = `datetime,energy_kwh
+2009-01-01 00:00:00,0.85
+2009-01-01 01:00:00,0.92
+2009-01-01 02:00:00,0.78
+2009-01-01 03:00:00,0.65
+2009-01-01 04:00:00,0.71
+2009-01-01 05:00:00,0.88
+2009-01-01 06:00:00,1.12
+2009-01-01 07:00:00,1.35
+2009-01-01 08:00:00,1.58
+2009-01-01 09:00:00,1.42`
+                  const blob = new Blob([csvContent], { type: 'text/csv' })
+                  const url = window.URL.createObjectURL(blob)
+                  const a = document.createElement('a')
+                  a.href = url
+                  a.download = 'modelo_consumo.csv'
+                  a.click()
+                }}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 flex items-center space-x-2 shadow-md"
+              >
                 <Download className="w-4 h-4" />
-                <span>Modelo CSV</span>
+                <span>Baixar Modelo CSV</span>
               </button>
             </div>
           </div>
         </div>
+
+        {/*Error message*/}
+        {error && (
+          <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4'>
+            {error}
+          </div>
+        )}
 
         {/*area de upload*/}
         <div className="bg-white rounded-2xl shadow-sm border-2 border-dashed border-gray-300 p-8 mb-6">
@@ -180,14 +228,11 @@ const ImportarDados = () => {
                   <p className="text-lg font-medium text-gray-900">
                     Arraste e solte seu arquivo aqui
                   </p>
-                  <p className="text-gray-500">ou</p>
+                  <p className="text-gray-500">ou clique para selecionar</p>
                 </div>
-                <button
-                  onClick={(e) => e.stopPropagation()}
-                  className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
-                >
-                  Selecionar Arquivo
-                </button>
+                <div className="text-sm text-gray-400 mt-2">
+                  <p>Formatos aceitos: .csv</p>
+                </div>
               </div>
             )}
           </div>

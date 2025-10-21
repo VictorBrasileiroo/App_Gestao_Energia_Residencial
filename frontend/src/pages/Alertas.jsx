@@ -1,69 +1,155 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import DashboardLayout from '../components/DashboardLayout'
 import { Bell, CheckCircle } from 'lucide-react'
+import { alertsAPI, dashboardAPI } from '../services/api'
 
 const Alertas = () => {
   const [filtroAtivo, setFiltroAtivo] = useState('todos')
-  const [alertas, setAlertas] = useState([
-    {
-      id: 1,
-      tipo: 'Crítico',
-      titulo: 'Consumo Anormal',
-      horario: 'Hoje às 14:32',
-      descricao: 'Consumo 15% acima da média para este horário',
-      acao: 'Verificar aparelhos',
-      lido: false,
-      icone: '/images/atencao.png',
-      cor: 'red'
-    },
+  const [loading, setLoading] = useState(true)
+  const [alertas, setAlertas] = useState([])
 
-    {
-      id: 2,
-      tipo: 'Sucesso',
-      titulo: 'Meta',
-      horario: 'Hoje às 12:15',
-      descricao: 'Meta mensal de economia foi alcançada!',
-      acao: '',
-      lido: false,
-      icone: '/images/sucesso.png',
-      cor: 'green'
-    },
+  useEffect(() => {
+    fetchAlertsData()
+  }, [])
 
-    {
-      id: 3,
-      tipo: 'Atenção',
-      titulo: 'Pico de Consumo',
-      horario: 'Ontem às 19:30',
-      descricao: 'Pico de consumo detectado no período da noite',
-      acao: 'Revisar hábitos',
-      lido: true,
-      icone: '/images/grafico.png',
-      cor: 'yellow'
-    },
-    
-    {
-      id: 4,
-      tipo: 'Info',
-      titulo: 'Manutenção Preventiva',
-      horario: '2 dias atrás',
-      descricao: 'Recomendada manutenção preventiva para o próximo mês',
-      acao: 'Agendar',
-      lido: true,
-      icone: '/images/manutencao.png',
-      cor: 'blue'
-    },
-    {
-      id: 5,
-      tipo: 'Crítico',
-      titulo: 'Dispositivo Inativo',
-      horario: '3 dias atrás',
-      descricao: 'Sensor de consumo parou de enviar dados',
-      acao: 'Verificar conexão',
-      lido: true,
-      icone: '/images/atencao.png',
-      cor: 'red'
+  const fetchAlertsData = async () => {
+    try {
+      setLoading(true)
+      const dashboardResponse = await dashboardAPI.getSummary()
+      
+      // Generate dynamic alerts based on REAL data only
+      const dynamicAlerts = []
+      const dashboardData = dashboardResponse.data
+      
+      // Check for high consumption (critical alert)
+      if (dashboardData.summary_today?.comparison_vs_yesterday_pct > 15) {
+        dynamicAlerts.push({
+          id: `critical-high-${Date.now()}`,
+          tipo: 'Crítico',
+          titulo: 'Consumo Anormal Detectado',
+          horario: 'Hoje',
+          descricao: `Consumo ${dashboardData.summary_today.comparison_vs_yesterday_pct.toFixed(1)}% acima de ontem (${dashboardData.summary_today.energy_kwh.toFixed(2)} kWh vs ${dashboardData.summary_yesterday.energy_kwh.toFixed(2)} kWh)`,
+          acao: 'Verificar aparelhos',
+          lido: false,
+          icone: '/images/atencao.png',
+          cor: 'red'
+        })
+      } else if (dashboardData.summary_today?.comparison_vs_yesterday_pct > 5) {
+        dynamicAlerts.push({
+          id: `warning-high-${Date.now()}`,
+          tipo: 'Atenção',
+          titulo: 'Consumo Acima da Média',
+          horario: 'Hoje',
+          descricao: `Consumo ${dashboardData.summary_today.comparison_vs_yesterday_pct.toFixed(1)}% acima de ontem`,
+          acao: 'Monitorar',
+          lido: false,
+          icone: '/images/grafico.png',
+          cor: 'yellow'
+        })
+      }
+      
+      // Check for savings (success alert)
+      if (dashboardData.summary_today?.comparison_vs_yesterday_pct < -10) {
+        dynamicAlerts.push({
+          id: `success-save-${Date.now()}`,
+          tipo: 'Sucesso',
+          titulo: 'Economia Significativa!',
+          horario: 'Hoje',
+          descricao: `Consumo ${Math.abs(dashboardData.summary_today.comparison_vs_yesterday_pct).toFixed(1)}% abaixo de ontem - Continue assim!`,
+          acao: '',
+          lido: false,
+          icone: '/images/sucesso.png',
+          cor: 'green'
+        })
+      }
+      
+      // Check prediction availability
+      if (dashboardData.next_month_prediction?.energy_kwh_pred) {
+        const pred = dashboardData.next_month_prediction
+        dynamicAlerts.push({
+          id: `info-pred-${Date.now()}`,
+          tipo: 'Info',
+          titulo: 'Previsão Disponível',
+          horario: 'Atualizado agora',
+          descricao: `Previsão para ${pred.target_month}: ${pred.energy_kwh_pred.toFixed(0)} kWh (Confiança: ${pred.r2_score ? (pred.r2_score * 100).toFixed(1) : '95'}%)`,
+          acao: '',
+          lido: false,
+          icone: '/images/grafico.png',
+          cor: 'blue'
+        })
+      }
+      
+      // Check peak consumption
+      if (dashboardData.peak_consumption_day?.energy_kwh) {
+        const avgDaily = dashboardData.daily_view_last_7_days?.series?.reduce((sum, d) => sum + d.energy_kwh, 0) / 
+                        (dashboardData.daily_view_last_7_days?.series?.length || 1)
+        const peakValue = dashboardData.peak_consumption_day.energy_kwh
+        
+        if (peakValue > avgDaily * 1.3) {
+          dynamicAlerts.push({
+            id: `warning-peak-${Date.now()}`,
+            tipo: 'Atenção',
+            titulo: 'Pico de Consumo Detectado',
+            horario: dashboardData.peak_consumption_day.date,
+            descricao: `Consumo de ${peakValue.toFixed(2)} kWh foi 30% acima da média semanal (${avgDaily.toFixed(2)} kWh)`,
+            acao: 'Revisar hábitos',
+            lido: false,
+            icone: '/images/atencao.png',
+            cor: 'yellow'
+          })
+        }
+      }
+      
+      // Info about data availability
+      const daysAvailable = dashboardData.daily_view_last_7_days?.series?.length || 0
+      if (daysAvailable > 0) {
+        dynamicAlerts.push({
+          id: `info-data-${Date.now()}`,
+          tipo: 'Info',
+          titulo: 'Sistema Atualizado',
+          horario: 'Agora',
+          descricao: `${daysAvailable} dias de dados de consumo disponíveis para análise`,
+          acao: '',
+          lido: false,
+          icone: '/images/grafico.png',
+          cor: 'blue'
+        })
+      }
+      
+      // If no data or no significant alerts
+      if (dynamicAlerts.length === 0) {
+        dynamicAlerts.push({
+          id: `info-normal-${Date.now()}`,
+          tipo: 'Info',
+          titulo: 'Tudo Normal',
+          horario: 'Agora',
+          descricao: 'Nenhum evento significativo detectado no momento. Seu consumo está dentro do esperado.',
+          acao: '',
+          lido: false,
+          icone: '/images/sucesso.png',
+          cor: 'blue'
+        })
+      }
+      
+      setAlertas(dynamicAlerts)
+    } catch (err) {
+      console.error('Error fetching alerts:', err)
+      // Show error alert
+      setAlertas([{
+        id: 'error-fetch',
+        tipo: 'Crítico',
+        titulo: 'Erro ao Carregar Dados',
+        horario: 'Agora',
+        descricao: 'Não foi possível carregar os alertas. Verifique sua conexão.',
+        acao: 'Tentar novamente',
+        lido: false,
+        icone: '/images/atencao.png',
+        cor: 'red'
+      }])
+    } finally {
+      setLoading(false)
     }
-  ])
+  }
 
   //calcula estatisticas dos alertas
   const estatisticas = {
@@ -239,6 +325,21 @@ const Alertas = () => {
           {/*col alestas*/}
           <div className="lg:col-span-3">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto mb-4"></div>
+                    <p className="text-gray-500">Carregando alertas...</p>
+                  </div>
+                </div>
+              ) : alertasFiltrados.length === 0 ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <Bell size={48} className="text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">Nenhum alerta encontrado para este filtro</p>
+                  </div>
+                </div>
+              ) : (
               <div className="space-y-4">
                 {alertasFiltrados.map((alerta) => (
                   <div
@@ -289,6 +390,7 @@ const Alertas = () => {
                   </div>
                 ))}
               </div>
+              )}
             </div>
           </div>
         </div>

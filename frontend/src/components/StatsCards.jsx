@@ -1,21 +1,38 @@
 import React from 'react'
 import { Zap, DollarSign, BarChart3, TrendingUp } from 'lucide-react'
 
-const StatsCards = () => {
+const StatsCards = ({ data }) => {
+    // Extract data from API response
+    const todayData = data?.summary_today || {}
+    const dailyView = data?.daily_view_last_7_days?.series || []
+    
+    // Calculate average and peak from last 7 days
+    const avgDaily = dailyView.length > 0 
+        ? (dailyView.reduce((sum, d) => sum + d.energy_kwh, 0) / dailyView.length)
+        : 0
+    
+    const peak = dailyView.length > 0
+        ? Math.max(...dailyView.map(d => d.energy_kwh))
+        : 0
+    
+    const totalConsumption = dailyView.length > 0
+        ? dailyView.reduce((sum, d) => sum + d.energy_kwh, 0)
+        : 0
+    
     const stats = [
         {
-            title: 'Consumo Total',
-            value: '289',
+            title: 'Consumo Total (7d)',
+            value: totalConsumption.toFixed(0),
             unit: 'kWh',
-            change: '-5',
-            trend: 'down',
+            change: todayData.comparison_vs_yesterday_pct ? `${todayData.comparison_vs_yesterday_pct > 0 ? '+' : ''}${todayData.comparison_vs_yesterday_pct.toFixed(1)}%` : null,
+            trend: todayData.comparison_vs_yesterday_pct < 0 ? 'down' : 'up',
             icon: Zap,
             iconBg: 'bg-green-500',
             iconColor: 'text-white'
         },
         {
-            title: 'Custo Total',
-            value: 'R$ 202,30',
+            title: 'Custo Total (7d)',
+            value: `R$ ${(totalConsumption * 0.70).toFixed(2)}`,
             unit: '',
             change: null,
             icon: DollarSign,
@@ -24,7 +41,7 @@ const StatsCards = () => {
         },
         {
             title: 'Média Diária',
-            value: '9,6',
+            value: avgDaily.toFixed(1),
             unit: 'kWh',
             change: null,
             icon: BarChart3,
@@ -33,7 +50,7 @@ const StatsCards = () => {
         },
         {
             title: 'Pico',
-            value: '15,8',
+            value: peak.toFixed(1),
             unit: 'kWh',
             change: null,
             icon: TrendingUp,

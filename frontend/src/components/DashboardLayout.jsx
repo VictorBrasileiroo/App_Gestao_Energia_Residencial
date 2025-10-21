@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 const DashboardLayout = ({ children }) => {
   const location = useLocation()
+  const navigate = useNavigate()
+  const { logout, user } = useAuth()
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [sidebarVisible, setSidebarVisible] = useState(true)
 
@@ -130,8 +133,8 @@ const DashboardLayout = ({ children }) => {
                 className="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 cursor-pointer w-full text-left"
                 onClick={() => {
                   setShowUserMenu(false)
-                  // logout
-                  alert('Saindo do sistema...')
+                  logout()
+                  navigate('/login')
                 }}
               >
                 <img src="/images/arrow-right.png" alt="Sair" className="h-4 w-4 mr-3" />

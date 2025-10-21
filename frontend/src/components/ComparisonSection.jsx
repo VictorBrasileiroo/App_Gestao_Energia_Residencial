@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { dashboardAPI } from '../services/api'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,52 +24,149 @@ ChartJS.register(
   Filler
 )
 
-const ComparisonSection = () => {
+const ComparisonSection = ({ data }) => {
+  const [monthlyData, setMonthlyData] = useState([])
+  const [chartLoading, setChartLoading] = useState(true)
+  
+  const dailyView = data?.daily_view_last_7_days?.series || []
+  const prediction = data?.next_month_prediction || {}
+  const todayData = data?.summary_today || {}
+  
+  // Fetch monthly comparison data for chart
+  useEffect(() => {
+    const fetchMonthlyData = async () => {
+      try {
+        setChartLoading(true)
+        const response = await dashboardAPI.getMonthlyComparison()
+        const allData = response.data.monthly_data || []
+        
+        // GAMBIARRA: Filtrar apenas até outubro (mês atual) + predição
+        const today = new Date()
+        const currentMonth = today.getMonth() + 1 // 1-12
+        const currentYear = today.getFullYear()
+        
+        const filteredData = allData.filter(item => {
+          // Sempre incluir predições
+          if (item.is_prediction) return true
+          
+          // Para dados reais, filtrar apenas até outubro/2025
+          const [year, month] = item.month_key.split('-').map(Number)
+          
+          // Se for ano anterior, incluir
+          if (year < currentYear) return true
+          
+          // Se for ano atual, incluir apenas até outubro
+          if (year === currentYear && month <= currentMonth) return true
+          
+          // Resto (novembro, dezembro do ano atual) -> EXCLUIR
+          return false
+        })
+        
+        console.log('📊 Dados originais:', allData.length)
+        console.log('✅ Dados filtrados (até OUT):', filteredData.length)
+        console.log('🗓️ Dados finais:', filteredData)
+        
+        setMonthlyData(filteredData)
+      } catch (error) {
+        console.error('Erro ao carregar dados mensais:', error)
+        setMonthlyData([])
+      } finally {
+        setChartLoading(false)
+      }
+    }
+    
+    if (data) {
+      fetchMonthlyData()
+    }
+  }, [data])
+  
+  // Calculate statistics
+  const last7DaysTotal = dailyView.reduce((sum, d) => sum + d.energy_kwh, 0)
+  const avgDaily = dailyView.length > 0 ? (last7DaysTotal / dailyView.length) : 0
+  const last30DaysAvg = avgDaily * 4.28 // Estimate month from week
+  
   const comparisons = [
     {
-      title: 'Mês Anterior',
-      value: '163',
+      title: 'Consumo Hoje',
+      value: todayData.energy_kwh?.toFixed(0) || '0',
       unit: 'kWh',
-      change: '+9.2%',
+      change: todayData.comparison_vs_yesterday_pct ? `${todayData.comparison_vs_yesterday_pct > 0 ? '+' : ''}${todayData.comparison_vs_yesterday_pct.toFixed(1)}%` : 'N/A',
       valueColor: 'text-green-600',
       bgColor: 'bg-gradient-to-br from-green-50 to-green-100',
-      changeColor: 'text-red-500'
+      changeColor: todayData.comparison_vs_yesterday_pct > 0 ? 'text-red-500' : 'text-green-500'
     },
     {
-      title: 'Média Trimestral',
-      value: '155',
-      unit: 'kWh',
-      change: '+14.8%',
+      title: 'Média Últimos 7 Dias',
+      value: avgDaily.toFixed(0),
+      unit: 'kWh/dia',
+      change: 'Média diária',
       valueColor: 'text-blue-600',
       bgColor: 'bg-gradient-to-br from-blue-50 to-blue-100',
-      changeColor: 'text-red-500'
+      changeColor: 'text-gray-600'
     },
     {
-      title: 'Previsão para o Próximo Mês',
-      value: '287',
-      unit: 'kWh',
-      change: '+25.4%',
+      title: 'Previsão Próximo Mês',
+      value: prediction.energy_kwh_pred?.toFixed(0) || 'N/A',
+      unit: prediction.energy_kwh_pred ? 'kWh' : '',
+      change: prediction.target_month || 'Sem predição',
       valueColor: 'text-orange-600',
       bgColor: 'bg-gradient-to-br from-orange-50 to-orange-100',
-      changeColor: 'text-red-500'
+      changeColor: 'text-orange-500'
     },
     {
-      title: 'Média Anual',
-      value: '168',
+      title: 'Total Últimos 7 Dias',
+      value: last7DaysTotal.toFixed(0),
       unit: 'kWh',
-      change: '+6%',
+      change: `${dailyView.length} dias`,
       valueColor: 'text-purple-600',
       bgColor: 'bg-gradient-to-br from-purple-50 to-purple-100',
-      changeColor: 'text-red-500'
+      changeColor: 'text-purple-500'
     }
   ]
 
+  // Prepare chart data from monthly API data
+  const chartLabels = monthlyData.map(item => item.label)
+  
+  // Separar dados reais e predição
+  const realMonths = monthlyData.filter(item => !item.is_prediction)
+  const predictionMonths = monthlyData.filter(item => item.is_prediction)
+  
+  console.log('📊 Dados mensais:', monthlyData)
+  console.log('✅ Meses reais:', realMonths.length)
+  console.log('🔮 Predições:', predictionMonths.length)
+  
+  // Array de consumo real (verde) - termina em outubro
+  const realConsumption = chartLabels.map((label, index) => {
+    const monthData = monthlyData[index]
+    return monthData.is_prediction ? null : monthData.energy_kwh
+  })
+  
+  // Array de predição (laranja) - começa no último mês real e vai até o mês de predição
+  const predictionData = chartLabels.map((label, index) => {
+    const monthData = monthlyData[index]
+    
+    // Se for o mês de predição, mostrar o valor
+    if (monthData.is_prediction) {
+      return monthData.energy_kwh
+    }
+    
+    // Se for o último mês real (outubro), também mostrar para conectar a linha
+    if (index === realMonths.length - 1) {
+      return monthData.energy_kwh
+    }
+    
+    return null
+  })
+  
+  console.log('🟢 Consumo Real:', realConsumption)
+  console.log('🟠 Predição:', predictionData)
+
   const chartData = {
-    labels: ['Set', 'Out', 'Nov', 'Dez', 'Jan (Prev)', 'Fev (Prev)'],
+    labels: chartLabels,
     datasets: [
       {
         label: 'Consumo Real',
-        data: [135, 160, 170, null, null, null],
+        data: realConsumption,
         borderColor: '#10b981',
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
         borderWidth: 3,
@@ -81,7 +179,7 @@ const ComparisonSection = () => {
       },
       {
         label: 'Predição',
-        data: [null, null, 170, 175, 172, 180],
+        data: predictionData,
         borderColor: '#f97316',
         backgroundColor: 'rgba(249, 115, 22, 0.1)',
         borderWidth: 3,
@@ -142,8 +240,7 @@ const ComparisonSection = () => {
             size: 11
           }
         },
-        min: 120,
-        max: 200
+        beginAtZero: false
       }
     },
     interaction: {
@@ -172,7 +269,17 @@ const ComparisonSection = () => {
 
       {/* Gráfico Chart.js */}
       <div className="h-64">
-        <Line data={chartData} options={chartOptions} />
+        {chartLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500">Carregando dados mensais...</p>
+          </div>
+        ) : monthlyData.length === 0 ? (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500">Sem dados históricos disponíveis</p>
+          </div>
+        ) : (
+          <Line data={chartData} options={chartOptions} />
+        )}
       </div>
     </div>
   )

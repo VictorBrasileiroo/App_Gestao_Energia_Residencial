@@ -1,12 +1,47 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import DashboardLayout from '../components/DashboardLayout'
 import StatsCardsRelatorios from '../components/StatsCardsRelatorios'
 import ConsumptionChart from '../components/ConsumptionChart'
 import MonthlySaving from '../components/MonthlySaving'
 import WeeklyAnalysis from '../components/WeeklyAnalysis'
 import { FileText, Download } from 'lucide-react'
+import { reportsAPI, dashboardAPI } from '../services/api'
 
 const Relatorios = () => {
+    const [reportData, setReportData] = useState(null)
+    const [dashboardData, setDashboardData] = useState(null)
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        fetchReportData()
+    }, [])
+
+    const fetchReportData = async () => {
+        try {
+            setLoading(true)
+            const [reportResponse, dashboardResponse] = await Promise.all([
+                reportsAPI.getSummary(),
+                dashboardAPI.getSummary()
+            ])
+            setReportData(reportResponse.data)
+            setDashboardData(dashboardResponse.data)
+        } catch (err) {
+            console.error('Error fetching report data:', err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    if (loading) {
+        return (
+            <DashboardLayout>
+                <div className='flex items-center justify-center min-h-screen'>
+                    <div className='text-xl'>Carregando relatórios...</div>
+                </div>
+            </DashboardLayout>
+        )
+    }
+
     return (
         <DashboardLayout>
             <div className='p-8 space-y-10 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen'>
@@ -51,7 +86,7 @@ const Relatorios = () => {
                 </div>
 
                 {/*statscards*/}
-                <StatsCardsRelatorios />
+                <StatsCardsRelatorios data={reportData} />
 
                 {/*tabs e gráficos*/}
                 <div className='bg-white rounded-2xl p-6 shadow-lg'>
@@ -73,13 +108,13 @@ const Relatorios = () => {
                     <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
                         {/*col esquerda*/}
                         <div className='space-y-8'>
-                            <WeeklyAnalysis />
-                            <ConsumptionChart />
+                            <WeeklyAnalysis data={dashboardData} />
+                            <ConsumptionChart data={dashboardData} />
                         </div>
 
                         {/*col direita*/}
                         <div className='space-y-8'>
-                            <MonthlySaving />
+                            <MonthlySaving data={reportData} />
                         </div>
                     </div>
                 </div>

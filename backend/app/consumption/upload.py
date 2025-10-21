@@ -3,7 +3,7 @@ from fastapi import UploadFile, HTTPException
 from sqlalchemy.orm import Session
 from .. import models
 
-def process_csv(used_id: int, file: UploadFile, db: Session):
+def process_csv(user_id: int, file: UploadFile, db: Session):
     try:
         df = pd.read_csv(file.file)
     except Exception:
@@ -13,16 +13,16 @@ def process_csv(used_id: int, file: UploadFile, db: Session):
         raise HTTPException(status_code=422, detail="Formato de CSV inválido")
     
     # conversao e validacao
-    df["datetime"] = pd.to_datetime(df["datetime"], erros="coerce")
+    df["datetime"] = pd.to_datetime(df["datetime"], errors="coerce")
     if df["datetime"].isna().any():
         raise HTTPException(status_code=422, detail="Datas inválidas")
     
-    # inserir o consumo diario
+    # inserir o consumo por hora
     hourly = [
         models.ConsumptionHourly(
             user_id=user_id,
             datetime=row["datetime"],
-            energy_lkwh=row["energy_kwh"]
+            energy_kwh=row["energy_kwh"]
         )
         for _, row in df.iterrows()
     ]

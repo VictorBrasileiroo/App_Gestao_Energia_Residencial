@@ -1,43 +1,50 @@
 import React from 'react'
 import { Zap, DollarSign, BarChart3, Target } from 'lucide-react'
 
-const StatsCardsRelatorios = () => {
+const StatsCardsRelatorios = ({ data }) => {
+  const reportData = data || {}
+  
+  const energy30 = reportData.energy_last_30_days_kwh || 0
+  const cost30 = reportData.cost_last_30_days || 0
+  const energyMonth = reportData.energy_current_month_kwh || 0
+  const energy7 = reportData.energy_last_7_days_kwh || 0
+  
   const stats = [
     {
-      title: 'Consumo Total',
-      value: '2,847',
+      title: 'Consumo Últimos 30 Dias',
+      value: energy30.toFixed(0),
       unit: 'kWh',
-      change: '+5.2%',
+      change: null,
       trend: 'up',
       icon: Zap,
       iconBg: 'bg-green-500',
       iconColor: 'text-white'
     },
     {
-      title: 'Custo Total',
-      value: 'R$ 1.987,90',
+      title: 'Custo Últimos 30 Dias',
+      value: `R$ ${cost30.toFixed(2)}`,
       unit: '',
-      change: '+4.8%',
+      change: null,
       trend: 'up',
       icon: DollarSign,
       iconBg: 'bg-orange-500',
       iconColor: 'text-white'
     },
     {
-      title: 'Média Diária',
-      value: '94.9',
+      title: 'Consumo Mês Atual',
+      value: energyMonth.toFixed(0),
       unit: 'kWh',
-      change: '+2.1%',
+      change: null,
       trend: 'up',
       icon: BarChart3,
       iconBg: 'bg-blue-500',
       iconColor: 'text-white'
     },
     {
-      title: 'Eficiência',
-      value: '92',
-      unit: '%',
-      change: '+8.5%',
+      title: 'Consumo Últimos 7 Dias',
+      value: energy7.toFixed(0),
+      unit: 'kWh',
+      change: null,
       trend: 'up',
       icon: Target,
       iconBg: 'bg-purple-500',

@@ -23,13 +23,22 @@ ChartJS.register(
   Filler
 )
 
-const WeeklyAnalysis = () => {
+const WeeklyAnalysis = ({ data }) => {
+  const dailyView = data?.daily_view_last_7_days?.series || []
+  
+  const labels = dailyView.map(d => {
+    const date = new Date(d.date)
+    return date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
+  })
+  
+  const values = dailyView.map(d => d.energy_kwh)
+  
   const chartData = {
-    labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+    labels: labels.length > 0 ? labels : ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
     datasets: [
       {
         label: 'Consumo (kWh)',
-        data: [10, 12, 9, 13, 12, 11, 15],
+        data: values.length > 0 ? values : [0, 0, 0, 0, 0, 0, 0],
         borderColor: '#10b981',
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
         borderWidth: 3,

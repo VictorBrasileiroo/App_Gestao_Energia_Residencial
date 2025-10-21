@@ -23,14 +23,25 @@ ChartJS.register(
   Filler
 )
 
-const ConsumptionChart = () => {
-  // Dados para Evolução Mensal
+const ConsumptionChart = ({ data }) => {
+  const dailyView = data?.daily_view_last_7_days?.series || []
+  const hourlyPattern = data?.hourly_pattern || []
+  
+  // Prepare data for chart
+  const labels = dailyView.map(d => {
+    const date = new Date(d.date)
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+  })
+  
+  const values = dailyView.map(d => d.energy_kwh)
+  
+  // Dados para Evolução dos últimos 7 dias
   const monthlyData = {
-    labels: ['Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul'],
+    labels: labels.length > 0 ? labels : ['Dia 1', 'Dia 2', 'Dia 3', 'Dia 4', 'Dia 5', 'Dia 6', 'Dia 7'],
     datasets: [
       {
         label: 'Consumo (kWh)',
-        data: [270, 280, 285, 290, 295, 300],
+        data: values.length > 0 ? values : [0, 0, 0, 0, 0, 0, 0],
         borderColor: '#10b981',
         backgroundColor: 'rgba(16, 185, 129, 0.1)',
         borderWidth: 3,
@@ -45,13 +56,16 @@ const ConsumptionChart = () => {
     ]
   }
 
-  // Dados para Padrão de Consumo por Horário
+  // Dados DINÂMICOS para padrão horário (do backend)
+  const hourlyLabels = hourlyPattern.map(h => `${h.hour}h`)
+  const hourlyValues = hourlyPattern.map(h => h.avg_kwh)
+  
   const hourlyData = {
-    labels: ['00h', '04h', '08h', '12h', '16h', '20h'],
+    labels: hourlyLabels.length > 0 ? hourlyLabels : ['00h', '04h', '08h', '12h', '16h', '20h'],
     datasets: [
       {
-        label: 'Consumo por Hora (kW)',
-        data: [1.2, 0.8, 2.5, 4.8, 6.2, 5.1],
+        label: 'Consumo por Hora (kWh)',
+        data: hourlyValues.length > 0 ? hourlyValues : [0, 0, 0, 0, 0, 0],
         borderColor: '#f59e0b',
         backgroundColor: 'rgba(245, 158, 11, 0.2)',
         borderWidth: 3,
@@ -65,6 +79,30 @@ const ConsumptionChart = () => {
       }
     ]
   }
+  
+  // Calcular distribuição por período do dia
+  const calculatePeriodTotals = () => {
+    const totals = {
+      morning: 0,   // 6h-12h
+      afternoon: 0, // 12h-18h
+      evening: 0,   // 18h-00h (18-23)
+      night: 0      // 00h-6h
+    }
+    
+    hourlyPattern.forEach(h => {
+      const hour = h.hour
+      const kwh = h.avg_kwh
+      
+      if (hour >= 6 && hour < 12) totals.morning += kwh
+      else if (hour >= 12 && hour < 18) totals.afternoon += kwh
+      else if (hour >= 18 && hour <= 23) totals.evening += kwh
+      else totals.night += kwh
+    })
+    
+    return totals
+  }
+  
+  const periodTotals = calculatePeriodTotals()
 
   const chartOptions = {
     responsive: true,
@@ -114,11 +152,18 @@ const ConsumptionChart = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Evolução Mensal */}
+      {/* Evolução dos últimos 7 dias */}
       <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-900">Evolução Mensal</h3>
-          <div className="text-sm text-green-600 font-medium bg-green-50 px-3 py-1 rounded-full">+2.8%</div>
+          <h3 className="text-xl font-bold text-gray-900">Evolução (Últimos 7 Dias)</h3>
+          {values.length > 1 && (
+            <div className={`text-sm font-medium px-3 py-1 rounded-full ${
+              values[values.length - 1] > values[values.length - 2] ? 'text-red-600 bg-red-50' : 'text-green-600 bg-green-50'
+            }`}>
+              {values[values.length - 1] > values[values.length - 2] ? '↑' : '↓'} 
+              {' '}{Math.abs(((values[values.length - 1] - values[values.length - 2]) / values[values.length - 2] * 100)).toFixed(1)}%
+            </div>
+          )}
         </div>
         
         <div className="h-64">
@@ -141,7 +186,7 @@ const ConsumptionChart = () => {
               <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
               <span className="text-xs text-gray-700 font-medium">Manhã (6h-12h)</span>
             </div>
-            <span className="text-sm font-bold text-blue-700">82 kWh</span>
+            <span className="text-sm font-bold text-blue-700">{periodTotals.morning.toFixed(1)} kWh</span>
           </div>
           
           <div className="flex items-center justify-between bg-green-50 p-3 rounded-lg">
@@ -149,7 +194,7 @@ const ConsumptionChart = () => {
               <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
               <span className="text-xs text-gray-700 font-medium">Tarde (12h-18h)</span>
             </div>
-            <span className="text-sm font-bold text-green-700">123 kWh</span>
+            <span className="text-sm font-bold text-green-700">{periodTotals.afternoon.toFixed(1)} kWh</span>
           </div>
           
           <div className="flex items-center justify-between bg-orange-50 p-3 rounded-lg">
@@ -157,7 +202,7 @@ const ConsumptionChart = () => {
               <div className="w-3 h-3 rounded-full bg-orange-500 mr-2"></div>
               <span className="text-xs text-gray-700 font-medium">Noite (18h-00h)</span>
             </div>
-            <span className="text-sm font-bold text-orange-700">156 kWh</span>
+            <span className="text-sm font-bold text-orange-700">{periodTotals.evening.toFixed(1)} kWh</span>
           </div>
           
           <div className="flex items-center justify-between bg-purple-50 p-3 rounded-lg">
@@ -165,7 +210,7 @@ const ConsumptionChart = () => {
               <div className="w-3 h-3 rounded-full bg-purple-500 mr-2"></div>
               <span className="text-xs text-gray-700 font-medium">Madrugada (00h-6h)</span>
             </div>
-            <span className="text-sm font-bold text-purple-700">49 kWh</span>
+            <span className="text-sm font-bold text-purple-700">{periodTotals.night.toFixed(1)} kWh</span>
           </div>
         </div>
       </div>

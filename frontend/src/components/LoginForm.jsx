@@ -4,20 +4,34 @@ import React, {useState} from 'react'
 import {APP_CONFIG} from '../utils/constants'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 //componente funcional LoginForm
 const LoginForm = () => {
     const navigate = useNavigate()
+    const { login } = useAuth()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
     
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        //validação
-        console.log('Login attempt:', { email, password })
+        setError('')
+        setLoading(true)
         
-        //vai pra dashboard
-        navigate('/dashboard')
+        try {
+            const result = await login(email, password)
+            if (result.success) {
+                navigate('/dashboard')
+            } else {
+                setError(result.error)
+            }
+        } catch (err) {
+            setError('Erro ao fazer login. Tente novamente.')
+        } finally {
+            setLoading(false)
+        }
     }
 
     //Interface do form  
@@ -52,6 +66,13 @@ const LoginForm = () => {
             </div>
 
             <div className='w-12 h-1 bg-gradient-to-r from-green-300 to-green-600 mx-auto mb-8 rounded-full'></div>
+           
+           {/*Error message*/}
+           {error && (
+               <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4'>
+                   {error}
+               </div>
+           )}
            
            {/*Formulario*/}
            <form onSubmit={handleSubmit} className='space-y-6'>
@@ -100,8 +121,9 @@ const LoginForm = () => {
                 {/*Botão de login*/}
                 <button
                 type='submit'
-                className='w-full bg-gradient-to-r from-green-400 to-green-600 text-white px-4 py-3 rounded-lg font-semibold hover:from-green-500 hover:to-green-700 focus:ring-2 focus:ring-green-300 focus:ring-offset-2 transition-all transform hover:-translate-y-0.5'>
-                    Entrar
+                disabled={loading}
+                className='w-full bg-gradient-to-r from-green-400 to-green-600 text-white px-4 py-3 rounded-lg font-semibold hover:from-green-500 hover:to-green-700 focus:ring-2 focus:ring-green-300 focus:ring-offset-2 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed'>
+                    {loading ? 'Entrando...' : 'Entrar'}
                 </button>
            </form>
 

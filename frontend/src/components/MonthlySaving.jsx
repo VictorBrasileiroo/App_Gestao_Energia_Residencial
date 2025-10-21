@@ -1,11 +1,34 @@
 import React from 'react'
 
-const MonthlySaving = () => {
+const MonthlySaving = ({ data }) => {
+    const reportData = data || {}
+    
+    // Calculate savings based on real data
+    const cost7Days = reportData.cost_last_7_days || 0
+    const cost30Days = reportData.cost_last_30_days || 0
+    const costCurrentMonth = reportData.cost_current_month || 0
+    
     const savings = [
-        { month: 'Julho', percentage: '-12%', values: 'R$ 45,20'},
-        { month: 'Agosto', percentage: '-8%', values: 'R$ 30,50'},
-        { month: 'Setembro', percentage: '-15%', values: 'R$ 60,00'},
-        { month: 'Outubro', percentage: '-10%', values: 'R$ 40,75'},
+        { 
+            month: 'Últimos 7 Dias', 
+            percentage: '', 
+            values: `R$ ${cost7Days.toFixed(2)}`
+        },
+        { 
+            month: 'Últimos 30 Dias', 
+            percentage: '', 
+            values: `R$ ${cost30Days.toFixed(2)}`
+        },
+        { 
+            month: 'Mês Atual', 
+            percentage: '', 
+            values: `R$ ${costCurrentMonth.toFixed(2)}`
+        },
+        { 
+            month: 'Predição Próximo Mês', 
+            percentage: '', 
+            values: reportData.prediction?.cost_pred ? `R$ ${reportData.prediction.cost_pred.toFixed(2)}` : 'N/A'
+        },
     ]
 
     return (

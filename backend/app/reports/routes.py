@@ -9,8 +9,7 @@ from .service import get_report_summary
 router = APIRouter(prefix="/reports", tags=["Reports"])
 
 def get_db():
-    db = SessionLocal
-
+    db = SessionLocal()
     try:
         yield db
     finally:
@@ -23,7 +22,7 @@ def report_monthly(year: int, month: int, current_user = Depends(get_current_use
     end_date = date(year, month, monthrange(year, month)[1])
     user_id = current_user.id
 
-    data = db.query(ConsumptionDaily).filter_by(
+    data = db.query(ConsumptionDaily).filter(
         ConsumptionDaily.user_id == user_id,
         ConsumptionDaily.date.between(start_date, end_date)
     ).all()

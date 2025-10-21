@@ -1,6 +1,12 @@
 from datetime import date, datetime, timedelta
 from sqlalchemy.orm import Session
 from ..models import ConsumptionDaily, TariffPlan, Prediction
+from fastapi import UploadFile
+from .upload import process_csv
+
+def process_and_save_consumption(db: Session, user_id: int, file: UploadFile):
+    """Processa arquivo CSV de consumo e salva no banco"""
+    return process_csv(user_id, file, db)
 
 def generate_prediction(db: Session, user_id: int):
     today = date.today()

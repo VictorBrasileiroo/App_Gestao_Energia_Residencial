@@ -20,13 +20,23 @@ ChartJS.register(
   Legend
 )
 
-const DailyConsumption = () => {
+const DailyConsumption = ({ data }) => {
+    const dailyView = data?.daily_view_last_7_days?.series || []
+    
+    // Format labels as day names
+    const labels = dailyView.map(d => {
+        const date = new Date(d.date)
+        return date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
+    })
+    
+    const values = dailyView.map(d => d.energy_kwh)
+    
     const chartData = {
-        labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+        labels: labels.length > 0 ? labels : ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
         datasets: [
             {
                 label: 'Consumo (kWh)',
-                data: [12, 15, 11, 16, 14, 17, 18],
+                data: values.length > 0 ? values : [0, 0, 0, 0, 0, 0, 0],
                 backgroundColor: [
                     '#10b981',  // Verde
                     '#059669',  // Verde escuro

@@ -3,26 +3,44 @@ from sqlalchemy.orm import Session
 from ..models import ConsumptionDaily, TariffPlan, Prediction
 
 def get_report_summary(db: Session, user_id: int):
-    today = date.today()
-    first_day_month = today.replace(day=1)
+    # Pegar a data mais recente disponível nos dados
+    most_recent = db.query(ConsumptionDaily).filter_by(user_id=user_id).order_by(ConsumptionDaily.date.desc()).first()
+    
+    if not most_recent:
+        return {
+            "energy_last_7_days_kwh": 0,
+            "energy_last_30_days_kwh": 0,
+            "energy_current_month_kwh": 0,
+            "cost_last_7_days": 0,
+            "cost_last_30_days": 0,
+            "cost_current_month": 0,
+            "tariff_price_per_kwh": 0.70,
+            "prediction": None
+        }
+    
+    reference_date = most_recent.date
+    first_day_month = reference_date.replace(day=1)
 
-    # Pega consumo diário do usuário
-    last_7_days = today - timedelta(days=7)
-    last_30_days = today - timedelta(days=30)
+    # Pega consumo diário do usuário baseado na data mais recente
+    last_7_days = reference_date - timedelta(days=7)
+    last_30_days = reference_date - timedelta(days=30)
 
     data_last_7 = db.query(ConsumptionDaily).filter(
         ConsumptionDaily.user_id == user_id,
-        ConsumptionDaily.date >= last_7_days
+        ConsumptionDaily.date >= last_7_days,
+        ConsumptionDaily.date <= reference_date
     ).all()
 
     data_last_30 = db.query(ConsumptionDaily).filter(
         ConsumptionDaily.user_id == user_id,
-        ConsumptionDaily.date >= last_30_days
+        ConsumptionDaily.date >= last_30_days,
+        ConsumptionDaily.date <= reference_date
     ).all()
 
     data_current_month = db.query(ConsumptionDaily).filter(
         ConsumptionDaily.user_id == user_id,
-        ConsumptionDaily.date >= first_day_month
+        ConsumptionDaily.date >= first_day_month,
+        ConsumptionDaily.date <= reference_date
     ).all()
 
     # Cálculos

@@ -2,26 +2,49 @@ import React, { useState } from 'react'
 import { APP_CONFIG } from '../utils/constants'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 const Cadastro = () => {
   const navigate = useNavigate()
+  const { register } = useAuth()
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
     senha: '',
     confirmarSenha: ''})
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
       
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    //validação
-    console.log('Cadastro attempt:', { 
-      nome: formData.nome, 
-      email: formData.email, 
-      senha: formData.senha, 
-      confirmarSenha: formData.confirmarSenha 
-    })
-    //vai pra dashboard
-    navigate('/dashboard')
+    setError('')
+    
+    // Validação de senha
+    if (formData.senha !== formData.confirmarSenha) {
+      setError('As senhas não coincidem')
+      return
+    }
+    
+    if (formData.senha.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres')
+      return
+    }
+    
+    setLoading(true)
+    
+    try {
+      const result = await register(formData.nome, formData.email, formData.senha)
+      if (result.success) {
+        alert('Conta criada com sucesso! Faça login para continuar.')
+        navigate('/login')
+      } else {
+        setError(result.error)
+      }
+    } catch (err) {
+      setError('Erro ao criar conta. Tente novamente.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleChange = (e) => {
@@ -60,6 +83,13 @@ const Cadastro = () => {
         </div>
 
         <div className="w-12 h-1 bg-gradient-to-r from-green-500 to-green-600 mx-auto mb-8 rounded-full"></div>
+
+        {/*Error message*/}
+        {error && (
+          <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4'>
+            {error}
+          </div>
+        )}
 
         {/*cadastro*/}
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -154,9 +184,10 @@ const Cadastro = () => {
           {/*btao de cadastrar*/}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 focus:ring-2 focus:ring-green-300 focus:ring-offset-2 transition-all transform hover:-translate-y-0.5"
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 focus:ring-2 focus:ring-green-300 focus:ring-offset-2 transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Cadastrar
+            {loading ? 'Cadastrando...' : 'Cadastrar'}
           </button>
         </form>
 
