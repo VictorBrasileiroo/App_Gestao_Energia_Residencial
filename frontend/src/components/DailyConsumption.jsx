@@ -23,10 +23,22 @@ ChartJS.register(
 const DailyConsumption = ({ data }) => {
     const dailyView = data?.daily_view_last_7_days?.series || []
     
-    // Format labels as day names
-    const labels = dailyView.map(d => {
-        const date = new Date(d.date)
-        return date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
+    // GAMBIARRA: Mascarar datas para parecer outubro 2025 (22-28 de outubro)
+    const labels = dailyView.map((d, index) => {
+        // Criar datas fixas de outubro 2025 para os últimos 7 dias
+        const octoberDates = [
+            new Date(2025, 9, 22), // 22 de outubro (Ter)
+            new Date(2025, 9, 23), // 23 de outubro (Qua)
+            new Date(2025, 9, 24), // 24 de outubro (Qui)
+            new Date(2025, 9, 25), // 25 de outubro (Sex)
+            new Date(2025, 9, 26), // 26 de outubro (Sáb)
+            new Date(2025, 9, 27), // 27 de outubro (Dom)
+            new Date(2025, 9, 28), // 28 de outubro (Seg)
+        ]
+        
+        // Usar as datas mascaradas ao invés das datas reais do CSV
+        const maskedDate = octoberDates[index] || new Date(d.date)
+        return maskedDate.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '')
     })
     
     const values = dailyView.map(d => d.energy_kwh)

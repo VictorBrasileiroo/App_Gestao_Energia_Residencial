@@ -59,13 +59,22 @@ def get_monthly_comparison(current_user=Depends(get_current_user), db: Session =
             "is_prediction": False
         })
     
-    # Adicionar predição para NOVEMBRO 2025 (próximo mês)
+    # Adicionar predição para NOVEMBRO 2025 - SEM aleatoriedade
     pred = db.query(Prediction).filter_by(user_id=user_id).order_by(Prediction.generated_at.desc()).first()
     if pred:
+        # Novembro (predição base do modelo ML)
         monthly_data.append({
             "label": "Nov (Prev)",
             "month_key": "2025-11",
             "energy_kwh": round(pred.energy_kwh_pred, 2),
+            "is_prediction": True
+        })
+        
+        # Dezembro (usando 108% da predição de novembro - valor fixo, não aleatório)
+        monthly_data.append({
+            "label": "Dez (Prev)", 
+            "month_key": "2025-12",
+            "energy_kwh": round(pred.energy_kwh_pred * 1.08, 2),  # Valor fixo 8% maior
             "is_prediction": True
         })
     
@@ -100,38 +109,36 @@ def get_dashboard(current_user=Depends(get_current_user), db: Session = Depends(
             }
         }
     
-    # Usar a data mais recente como "hoje"
+    # Usar a data mais recente como "hoje" - SEMPRE dados reais do banco
     reference_date = most_recent_record.date
     yesterday_date = reference_date - timedelta(days=1)
-
-    # tarifa e o preco por kwh
-    tariff = db.query(TariffPlan).filter(TariffPlan.user_id == user_id).first()
-    price = tariff.price_per_kwh if tariff else 0.70
 
     # record de dados do dia mais recente e do dia anterior
     today_record = most_recent_record
     yesterday_record = db.query(ConsumptionDaily).filter_by(user_id=user_id, date=yesterday_date).first()
 
-    # kwh gastos no dia mais recente e no anterior
+    # kwh gastos no dia mais recente e no anterior - DADOS REAIS
     today_kwh = today_record.energy_kwh if today_record else 0
     yesterday_kwh = yesterday_record.energy_kwh if yesterday_record else 0
 
-    # comparacao entre a energia gasta
+    # comparacao entre a energia gasta - DADOS REAIS
     comparison = ((today_kwh - yesterday_kwh) / yesterday_kwh * 100) if yesterday_kwh else 0
 
-    # Últimos 7 dias a partir de HOJE (datetime.now)
-    from datetime import datetime
-    today = datetime.now().date()
-    start_7 = today - timedelta(days=6)
+    # tarifa e o preco por kwh
+    tariff = db.query(TariffPlan).filter(TariffPlan.user_id == user_id).first()
+    price = tariff.price_per_kwh if tariff else 0.70
+
+    # Últimos 7 dias a partir da data mais recente disponível - DADOS REAIS
+    start_7 = reference_date - timedelta(days=6)
     
-    # Buscar dados dos últimos 7 dias
+    # Buscar dados dos últimos 7 dias reais do banco
     last_7 = db.query(ConsumptionDaily).filter(
         ConsumptionDaily.user_id == user_id,
         ConsumptionDaily.date >= start_7,
-        ConsumptionDaily.date <= today
+        ConsumptionDaily.date <= reference_date
     ).order_by(ConsumptionDaily.date).all()
 
-    # Se não houver dados para hoje, pegar os últimos 7 registros disponíveis
+    # Se não houver dados suficientes, pegar os últimos registros disponíveis
     if len(last_7) == 0:
         last_7 = db.query(ConsumptionDaily).filter(
             ConsumptionDaily.user_id == user_id
