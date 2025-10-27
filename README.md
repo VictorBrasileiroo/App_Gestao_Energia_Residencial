@@ -29,7 +29,7 @@ Sistema completo de monitoramento, análise e previsão de consumo de energia el
 
 ---
 
-## 🎯 Sobre o Projeto
+## Sobre o Projeto
 
 O **Sistema de Gestão de Energia Residencial** é uma aplicação web completa desenvolvida para ajudar famílias e residências a monitorar, analisar e otimizar seu consumo de energia elétrica. 
 
