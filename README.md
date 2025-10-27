@@ -429,7 +429,21 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ## 👥 Autores
 
-- **Victor Brasileiro** - [@VictorBrasileiroo](https://github.com/VictorBrasileiroo)
+| Nome completo                       | Cargo                                       |
+| ----------------------------------- | ------------------------------------------- |
+| Victor André Lopes Brasileiro       | Gestor de projetos e desenvolvedor backend  |
+| Clauderlan Batista Alves            | Desenvolvedor frontend                      |
+| Artur Ferreira Marques da Silva     | Suporte técnico em desenvolvimento frontend |
+| João Victor Duarte do Nascimento    | Desenvolvedor frontend                      |
+| José Milton de Moraes Silva Neto    | Suporte técnico em desenvolvimento frontend |
+| Davi Cavalcanti Muritiba            | Suporte técnico em desenvolvimento frontend |
+| Laura Beatriz Lins Ramos Mainero    | Desenvolvedora backend                      |
+| Yuri Raphael Mota de Araujo Barbosa | Desenvolvedor backend                       |
+| Eduardo Gomes                       | Desenvolvedor full stack                    |
+| Denilson Bulhões                    | Desenvolvedor full stack                    |
+| Leonardo Vinícius                   | Desenvolvedor full stack                    |
+| Matheus Giordini                    | Desenvolvedor full stack                    |
+| Ayron                               | Desenvolvedor full stack                    |
 
 ---
 
@@ -437,9 +451,9 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 Para dúvidas, sugestões ou feedback:
 
-- 📧 Email: [seu-email@exemplo.com](mailto:seu-email@exemplo.com)
+- 📧 Email: [seu-email@exemplo.com](mailto:valb1@ic.ufal.br)
 - 🐙 GitHub: [@VictorBrasileiroo](https://github.com/VictorBrasileiroo)
-- 💼 LinkedIn: [Seu LinkedIn](https://linkedin.com/in/seu-perfil)
+- 💼 LinkedIn: [Seu LinkedIn](https://www.linkedin.com/in/victorbrasileirooo/)
 
 ---
 
@@ -448,7 +462,6 @@ Para dúvidas, sugestões ou feedback:
 - Comunidade React e FastAPI
 - Bibliotecas de código aberto utilizadas
 - Contribuidores do projeto
-
 ---
 
 ## 🔮 Roadmap
