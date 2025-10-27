@@ -535,11 +535,3 @@ VITE_API_URL=http://localhost:8001
 - **Tempo de Desenvolvimento**: Em andamento
 
 ---
-
-<div align="center">
-
-**⭐ Se este projeto foi útil, considere dar uma estrela no GitHub! ⭐**
-
-Made with ❤️ and ☕ by [Victor Brasileiro](https://github.com/VictorBrasileiroo)
-
-</div>
