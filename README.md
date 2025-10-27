@@ -1,4 +1,4 @@
-# 🏠⚡ Sistema de Gestão de Energia Residencial
+# Voltix - Sistema de Gestão de Energia Residencial
 
 ![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow)
 ![License](https://img.shields.io/badge/License-MIT-blue)
@@ -10,7 +10,7 @@ Sistema completo de monitoramento, análise e previsão de consumo de energia el
 
 ---
 
-## 📋 Índice
+## Índice
 
 - [Sobre o Projeto](#-sobre-o-projeto)
 - [Funcionalidades](#-funcionalidades)
@@ -35,16 +35,16 @@ O **Sistema de Gestão de Energia Residencial** é uma aplicação web completa 
 
 ### Objetivos
 
-- 📊 **Monitoramento em Tempo Real**: Acompanhe seu consumo de energia hora a hora
-- 📈 **Análises Detalhadas**: Gráficos e estatísticas sobre padrões de consumo
-- 🔮 **Previsões Inteligentes**: Machine Learning para prever consumo futuro
-- 💡 **Dicas Personalizadas**: Recomendações para economia de energia
-- 🚨 **Alertas Inteligentes**: Notificações de consumo anormal
-- 📑 **Relatórios Completos**: Exportação de dados e análises
+-  **Monitoramento em Tempo Real**: Acompanhe seu consumo de energia hora a hora
+-  **Análises Detalhadas**: Gráficos e estatísticas sobre padrões de consumo
+-  **Previsões Inteligentes**: Machine Learning para prever consumo futuro
+-  **Dicas Personalizadas**: Recomendações para economia de energia
+-  **Alertas Inteligentes**: Notificações de consumo anormal
+-  **Relatórios Completos**: Exportação de dados e análises
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 ### Dashboard Principal
 - Visualização de consumo diário, semanal e mensal
@@ -84,7 +84,7 @@ O **Sistema de Gestão de Energia Residencial** é uma aplicação web completa 
 
 ---
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 O projeto utiliza uma arquitetura de três camadas:
 
@@ -122,7 +122,7 @@ O projeto utiliza uma arquitetura de três camadas:
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 ### Frontend
 - **React 19.2.0** - Biblioteca UI
@@ -155,7 +155,7 @@ O projeto utiliza uma arquitetura de três camadas:
 
 ---
 
-## 📦 Pré-requisitos
+## Pré-requisitos
 
 - **Python 3.8+** instalado
 - **Node.js 16+** e npm instalado
@@ -164,16 +164,16 @@ O projeto utiliza uma arquitetura de três camadas:
 
 ---
 
-## 🚀 Instalação
+## Instalação
 
-### 1️⃣ Clone o Repositório
+### Clone o Repositório
 
 ```bash
 git clone https://github.com/VictorBrasileiroo/App_Gestao_Energia_Residencial.git
 cd App_Gestao_Energia_Residencial
 ```
 
-### 2️⃣ Configure o Backend
+### Configure o Backend
 
 ```bash
 cd backend
@@ -183,7 +183,7 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-### 3️⃣ Configure o Middle Layer
+### Configure o Middle Layer
 
 ```bash
 cd ../middle
@@ -192,14 +192,14 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-### 4️⃣ Configure o Frontend
+### Configure o Frontend
 
 ```bash
 cd ../frontend
 npm install
 ```
 
-### 5️⃣ Gere Dados de Exemplo (Opcional)
+### Gere Dados de Exemplo (Opcional)
 
 ```bash
 cd ..
@@ -210,7 +210,7 @@ Este script gerará dados realistas de consumo de energia para o período de 01/
 
 ---
 
-## 💻 Uso
+## Uso
 
 ### Iniciar o Backend
 
@@ -242,7 +242,7 @@ npm run dev
 
 Frontend estará rodando em: `http://localhost:5173`
 
-### 🐳 Usando Docker (Alternativa)
+### Usando Docker (Alternativa)
 
 ```bash
 cd middle
@@ -251,12 +251,12 @@ docker-compose up -d
 
 ---
 
-## 📁 Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 App_Gestao_Energia_Residencial/
 │
-├── 📂 backend/                    # API Principal
+├──  backend/                    # API Principal
 │   ├── app/
 │   │   ├── __init__.py
 │   │   ├── main.py               # Entry point do FastAPI
@@ -272,7 +272,7 @@ App_Gestao_Energia_Residencial/
 │   │   └── utils/                # Utilidades
 │   └── requirements.txt
 │
-├── 📂 frontend/                   # Interface Web
+├──  frontend/                   # Interface Web
 │   ├── src/
 │   │   ├── components/           # Componentes React
 │   │   ├── pages/                # Páginas da aplicação
@@ -284,7 +284,7 @@ App_Gestao_Energia_Residencial/
 │   ├── package.json
 │   └── vite.config.js
 │
-├── 📂 middle/                     # Camada Intermediária
+├──  middle/                     # Camada Intermediária
 │   ├── src/
 │   │   ├── main.py
 │   │   ├── config.py
@@ -293,7 +293,7 @@ App_Gestao_Energia_Residencial/
 │   ├── Dockerfile
 │   └── requirements.txt
 │
-├── 📂 data/                       # Dados de consumo
+├──  data/                       # Dados de consumo
 │   ├── dados_consumo_por_hora.csv
 │   └── dados_consumo_por_dia.csv
 │
@@ -303,7 +303,7 @@ App_Gestao_Energia_Residencial/
 
 ---
 
-## 🔌 API Endpoints
+##  API Endpoints
 
 ### Autenticação
 
@@ -355,7 +355,7 @@ GET    /reports/export         # Exportar dados
 
 ---
 
-## 🤖 Machine Learning
+## Machine Learning
 
 ### Modelo de Previsão
 
@@ -402,7 +402,7 @@ O sistema utiliza **Random Forest Regressor** para prever o consumo futuro de en
 
 ---
 
-## 🤝 Contribuindo
+## Contribuindo
 
 Contribuições são bem-vindas! Para contribuir:
 
@@ -421,13 +421,13 @@ Contribuições são bem-vindas! Para contribuir:
 
 ---
 
-## 📄 Licença
+## Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalhes.
 
 ---
 
-## 👥 Autores
+## Autores
 
 | Nome completo                       | Cargo                                       |
 | ----------------------------------- | ------------------------------------------- |
@@ -447,24 +447,24 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 ---
 
-## 📞 Contato
+## Contato
 
 Para dúvidas, sugestões ou feedback:
 
-- 📧 Email: [seu-email@exemplo.com](mailto:valb1@ic.ufal.br)
-- 🐙 GitHub: [@VictorBrasileiroo](https://github.com/VictorBrasileiroo)
-- 💼 LinkedIn: [Seu LinkedIn](https://www.linkedin.com/in/victorbrasileirooo/)
+- Email: [seu-email@exemplo.com](mailto:valb1@ic.ufal.br)
+- GitHub: [@VictorBrasileiroo](https://github.com/VictorBrasileiroo)
+- LinkedIn: [Seu LinkedIn](https://www.linkedin.com/in/victorbrasileirooo/)
 
 ---
 
-## 🙏 Agradecimentos
+## Agradecimentos
 
 - Comunidade React e FastAPI
 - Bibliotecas de código aberto utilizadas
 - Contribuidores do projeto
 ---
 
-## 🔮 Roadmap
+## Roadmap
 
 ### Versão 2.0 (Planejado)
 
@@ -481,7 +481,7 @@ Para dúvidas, sugestões ou feedback:
 
 ---
 
-## ⚙️ Configuração Avançada
+## Configuração Avançada
 
 ### Variáveis de Ambiente
 
@@ -508,7 +508,7 @@ VITE_API_URL=http://localhost:8001
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Problemas Comuns
 
@@ -526,7 +526,7 @@ VITE_API_URL=http://localhost:8001
 
 ---
 
-## 📊 Estatísticas do Projeto
+## Estatísticas do Projeto
 
 - **Linhas de Código**: ~10.000+
 - **Arquivos**: 50+
