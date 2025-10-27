@@ -385,23 +385,6 @@ O sistema utiliza **Random Forest Regressor** para prever o consumo futuro de en
 - **R² Score**
 
 ---
-
-## 📸 Screenshots
-
-### Dashboard Principal
-![Dashboard](./docs/screenshots/dashboard.png)
-
-### Análise de Consumo
-![Análise](./docs/screenshots/analytics.png)
-
-### Previsões
-![Previsões](./docs/screenshots/predictions.png)
-
-### Alertas
-![Alertas](./docs/screenshots/alerts.png)
-
----
-
 ## Contribuindo
 
 Contribuições são bem-vindas! Para contribuir:
