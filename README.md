@@ -434,9 +434,9 @@ Este projeto está sob a licença MIT. Veja o arquivo `LICENSE` para mais detalh
 
 Para dúvidas, sugestões ou feedback:
 
-- Email: [seu-email@exemplo.com](mailto:valb1@ic.ufal.br)
-- GitHub: [@VictorBrasileiroo](https://github.com/VictorBrasileiroo)
-- LinkedIn: [Seu LinkedIn](https://www.linkedin.com/in/victorbrasileirooo/)
+- Email: valb1@ic.ufal.br
+- GitHub: https://github.com/VictorBrasileiroo
+- LinkedIn: https://www.linkedin.com/in/victorbrasileirooo/
 
 ---
 
